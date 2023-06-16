@@ -5,5 +5,6 @@ module "master_node" {
 	key_name        = ""
 	subnet       = ""
 	security_group = ""
+	path = ""
 
 }

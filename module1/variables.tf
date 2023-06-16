@@ -19,6 +19,5 @@ variable "security_group" {
 }
 
 variable "path" {
-  default = "/home/bapun/demo.pem"
   type = string
 }
