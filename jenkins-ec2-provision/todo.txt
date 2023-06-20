@@ -1,0 +1,43 @@
+1. first you need to install a plugin called   "Cloudbees AWS Credentials" 
+
+2. Then add aws crentials in manage jenkins -> credentials section with global scope
+
+3. to do this you can both freestyle or pipeline build
+
+
+	freestyle build:--
+	
+	-> enable "this project is parameterized"
+		parameters needed: 
+				1. AMI_ID  (string)
+				2. INSTANCE_TYPE (string)
+				3. KEY_NAME (string)
+				4. SECURITY_GROUP (string)
+				5. SUBNET_ID (string)
+				6. EBS_SIZE (string)
+
+	-> enable "trigger builds remotely" and provide custom-token
+
+	-> parse aws credentials by enabling "use secret text of files"
+
+	-> build steps as "execute shell" and provide bellow script
+	
+		aws ec2 run-instances \
+		  --image-id $AMI_ID \
+		  --instance-type $INSTANCE_TYPE \
+		  --key-name $KEY_NAME \
+		  --region "us-east-1" \
+		  --security-group-ids $SECURITY_GROUP \
+		  --subnet-id $SUBNET_ID \
+		  --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$EBS_SIZE,\"DeleteOnTermination\":true}}]"
+		
+
+	-> to built it by remote trigger parse your uri in this manner 
+
+		[jenkins-url]/job/[job-name]/buildWithParameters?token=[custom-token]&AMI_ID=[image-id]&INSTANCE_TYPE=[instance-type]&KEY_NAME=[key-name]&SECURITY_GROUP=[securityGroup-id]&SUBNET_ID=[subnet-id]&EBS_SIZE=[size more then 8]
+
+
+	-> example:
+
+		http://44.204.91.215:8080/job/task2/buildWithParameters?token=custom_token&AMI_ID=ami-053b0d53c279acc90&INSTANCE_TYPE=t2.micro&KEY_NAME=do&SECURITY_GROUP=sg-0c466ee05da4cd9a6&SUBNET_ID=subnet-04e831f340db3d83c&EBS_SIZE=11
+
